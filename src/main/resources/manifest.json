@@ -1,0 +1,6 @@
+{
+  "Group": "Astral",
+  "Name": "ProxyPluginHytale",
+  "Version": "0.0.1",
+  "Main": "com.astral.server.Main"
+}
