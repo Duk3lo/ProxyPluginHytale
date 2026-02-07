@@ -42,10 +42,13 @@ public final class RedisService {
             client = new RedisSocketClient(host, port, timeout);
 
             if (password != null && !password.isBlank()) {
+                logger.info("Authenticating with Redis...");
                 boolean ok = client.auth(password);
                 if (!ok) {
                     throw new IOException("AUTH failed");
                 }
+            } else {
+                logger.debug("Redis AUTH skipped (no password)");
             }
 
             logger.info("Redis connected to {}:{}", host, port);
