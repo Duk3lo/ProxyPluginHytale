@@ -18,6 +18,7 @@ public final class RedisService {
         this.port = port;
         this.timeout = timeout;
         this.logger = logger;
+        reconnect();
     }
     public synchronized RedisSocketClient getClient() {
         try {
@@ -35,7 +36,7 @@ public final class RedisService {
             if (client != null) {
                 try { client.close(); } catch (IOException ignored) {}
             }
-            client = new RedisSocketClient(host, port);
+            client = new RedisSocketClient(host, port, timeout);
             logger.info("Redis connected to {}:{}", host, port);
         } catch (IOException e) {
             logger.error("Unable to connect to Redis {}:{}", host, port, e);

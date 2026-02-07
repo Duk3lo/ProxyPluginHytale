@@ -17,11 +17,14 @@ public final class RedisSocketClient implements Closeable {
     private static final byte CR = '\r';
     private static final byte LF = '\n';
 
-    public RedisSocketClient(String host, int port) throws IOException {
-        this.socket = new Socket(host, port);
+    public RedisSocketClient(String host, int port, int timeoutMillis) throws IOException {
+        this.socket = new Socket();
+        this.socket.connect(new java.net.InetSocketAddress(host, port), timeoutMillis);
+        this.socket.setSoTimeout(timeoutMillis);
         this.out = socket.getOutputStream();
         this.in = new BufferedInputStream(socket.getInputStream());
     }
+
 
     private synchronized void sendCommand(String @NotNull ... args) throws IOException {
         StringBuilder sb = new StringBuilder();

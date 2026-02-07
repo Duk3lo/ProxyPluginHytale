@@ -35,7 +35,7 @@ public final class Configuration {
 
     private void createDefault() throws IOException {
         Properties defaults = new Properties();
-        defaults.setProperty("redis.host", "localhost");
+        defaults.setProperty("redis.host", "127.0.0.1");
         defaults.setProperty("redis.port", "6379");
         defaults.setProperty("redis.timeout", "1000");
 

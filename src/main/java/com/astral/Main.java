@@ -4,6 +4,7 @@ import com.astral.commands.CommandReload;
 import com.astral.config.Configuration;
 import com.astral.info.EventsRegistry;
 import com.astral.redis.RedisService;
+import com.astral.redis.RedisSocketClient;
 import me.internalizable.numdrassl.api.Numdrassl;
 import me.internalizable.numdrassl.api.ProxyServer;
 import me.internalizable.numdrassl.api.event.Subscribe;
@@ -35,7 +36,26 @@ public final class Main {
         instance = this;
         Configuration config = new Configuration(path);
         config.load();
-        redisService = new RedisService(config.redisHost(), config.redisPort(), config.redisTimeout(), logger);
+
+
+        redisService = new RedisService(
+                config.redisHost(),
+                config.redisPort(),
+                config.redisTimeout(),
+                logger
+        );
+
+        try {
+            RedisSocketClient client = redisService.getClient();
+            if (client != null && client.isAlive()) {
+                logger.info("Redis conectado en {}:{}", config.redisHost(), config.redisPort());
+            } else {
+                logger.warn("No se pudo conectar a Redis en {}:{}", config.redisHost(), config.redisPort());
+            }
+        } catch (Exception e) {
+            logger.error("Excepción al conectar a Redis en inicio", e);
+        }
+
         proxy.getCommandManager().register(instance, new CommandReload(logger, config));
         proxy.getEventManager().register(instance, new EventsRegistry(redisService, logger));
         logger.info("Proxy Plugin initialized");
@@ -43,6 +63,10 @@ public final class Main {
 
     public void setRedisService(RedisService redisService) {
         this.redisService = redisService;
+    }
+
+    public ProxyServer getProxy() {
+        return proxy;
     }
 
     public static Main getInstance() {return instance;}
