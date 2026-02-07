@@ -47,15 +47,29 @@ public final class EventsRegistry {
             logger.warn("Redis no disponible para actualizar servidores");
             return;
         }
+
         RedisSocketClient redis = redisService.getClient();
+        if (redis == null) {
+            logger.warn("Redis client es null al intentar actualizar servidores");
+            return;
+        }
+
         String newCount = String.valueOf(playerCount);
         try {
             String oldCount = redis.hget("servers:players", serverName);
-            if (newCount.equals(oldCount)) {
-                return;
+            if (!newCount.equals(oldCount)) {
+                redis.hset("servers:players", serverName, newCount);
+                logger.debug("Redis actualizado: {} -> {} jugadores", serverName, newCount);
             }
-            redis.hset("servers:players", serverName, newCount);
-            logger.debug("Redis actualizado: {} -> {} jugadores", serverName, newCount);
+
+            int allPlayers = proxy.getPlayerCount();
+            String allPlayersStr = String.valueOf(allPlayers);
+
+            String oldTotal = redis.get("global:players");
+            if (!allPlayersStr.equals(oldTotal)) {
+                redis.set("global:players", allPlayersStr);
+                logger.debug("Global players actualizado -> {}", allPlayersStr);
+            }
 
         } catch (IOException e) {
             logger.error("Error actualizando Redis para server {}", serverName, e);

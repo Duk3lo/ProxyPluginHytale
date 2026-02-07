@@ -13,9 +13,7 @@ import me.internalizable.numdrassl.api.plugin.DataDirectory;
 import me.internalizable.numdrassl.api.plugin.Inject;
 import me.internalizable.numdrassl.api.plugin.Plugin;
 import org.slf4j.Logger;
-
 import java.nio.file.Path;
-
 
 @Plugin(
         id = "HytaleProxyBase",
