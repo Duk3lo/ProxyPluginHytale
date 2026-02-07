@@ -38,6 +38,7 @@ public final class Configuration {
         defaults.setProperty("redis.host", "127.0.0.1");
         defaults.setProperty("redis.port", "6379");
         defaults.setProperty("redis.timeout", "1000");
+        defaults.setProperty("redis.password", "");
 
         try (OutputStream out = Files.newOutputStream(file)) {
             defaults.store(out, "Astral Proxy Configuration");
@@ -55,4 +56,6 @@ public final class Configuration {
     public int redisTimeout() {
         return Integer.parseInt(props.getProperty("redis.timeout"));
     }
+
+    public String redisPassword() {return props.getProperty("redis.password", "");}
 }

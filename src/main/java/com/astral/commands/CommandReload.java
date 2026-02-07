@@ -55,7 +55,7 @@ public final class CommandReload implements Command {
             playerOpt.ifPresent(player -> player.sendMessage("Reloading redis"));
             Configuration configuration = this.configuration;
             configuration.load();
-            plugin.setRedisService(new RedisService(configuration.redisHost(), configuration.redisPort(), configuration.redisTimeout() ,logger));
+            plugin.setRedisService(new RedisService(configuration.redisHost(), configuration.redisPort(), configuration.redisTimeout(), configuration.redisPassword(), logger));
             commandSource.sendMessage("Reloading redis");
             return CommandResult.success();
         }

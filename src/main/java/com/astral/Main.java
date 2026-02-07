@@ -40,6 +40,7 @@ public final class Main {
                 config.redisHost(),
                 config.redisPort(),
                 config.redisTimeout(),
+                config.redisPassword(),
                 logger
         );
 

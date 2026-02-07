@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.astral"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
 
     implementation("org.slf4j:slf4j-api:2.0.13")
-    implementation("ch.qos.logback:logback-classic:1.5.6")
+
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

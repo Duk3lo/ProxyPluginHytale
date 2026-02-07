@@ -99,6 +99,12 @@ public final class RedisSocketClient implements Closeable {
         return resp == null ? null : resp.toString();
     }
 
+    public synchronized boolean auth(@NotNull String password) throws IOException {
+        sendCommand("AUTH", password);
+        Object resp = readRESP();
+        return resp != null && "OK".equals(resp.toString());
+    }
+
     public @Nullable String get(String key) throws IOException {
         sendCommand("GET", key);
         Object resp = readRESP();
@@ -140,10 +146,6 @@ public final class RedisSocketClient implements Closeable {
     @Override
     public void close() throws IOException {
         socket.close();
-    }
-
-    public boolean isSocketOpen() {
-        return socket != null && socket.isConnected() && !socket.isClosed() && socket.isBound();
     }
 
     public boolean isAlive() {

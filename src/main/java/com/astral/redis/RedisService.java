@@ -9,14 +9,16 @@ public final class RedisService {
     private final String host;
     private final int port;
     private final int timeout;
+    private final String password;
     private final Logger logger;
 
     private RedisSocketClient client;
 
-    public RedisService(String host, int port, int timeout, Logger logger) {
+    public RedisService(String host, int port, int timeout, String password, Logger logger) {
         this.host = host;
         this.port = port;
         this.timeout = timeout;
+        this.password = password;
         this.logger = logger;
         reconnect();
     }
@@ -36,7 +38,16 @@ public final class RedisService {
             if (client != null) {
                 try { client.close(); } catch (IOException ignored) {}
             }
+
             client = new RedisSocketClient(host, port, timeout);
+
+            if (password != null && !password.isBlank()) {
+                boolean ok = client.auth(password);
+                if (!ok) {
+                    throw new IOException("AUTH failed");
+                }
+            }
+
             logger.info("Redis connected to {}:{}", host, port);
         } catch (IOException e) {
             logger.error("Unable to connect to Redis {}:{}", host, port, e);
