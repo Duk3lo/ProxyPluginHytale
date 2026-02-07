@@ -1,28 +1,49 @@
 package com.astral;
 
+import com.astral.commands.CommandReload;
+import com.astral.config.Configuration;
+import com.astral.info.EventsRegistry;
+import com.astral.redis.RedisService;
+import me.internalizable.numdrassl.api.Numdrassl;
 import me.internalizable.numdrassl.api.ProxyServer;
 import me.internalizable.numdrassl.api.event.Subscribe;
 import me.internalizable.numdrassl.api.event.proxy.ProxyInitializeEvent;
+import me.internalizable.numdrassl.api.plugin.DataDirectory;
 import me.internalizable.numdrassl.api.plugin.Inject;
 import me.internalizable.numdrassl.api.plugin.Plugin;
+import org.slf4j.Logger;
 
+import java.nio.file.Path;
 
 
 @Plugin(
-        id = "my-plugin",
-        name = "My Plugin",
+        id = "HytaleProxyBase",
+        name = "Hytale Proxy Base",
         version = "1.0.0",
-        authors = {"YourName"},
-        description = "My first Numdrassl plugin"
+        authors = {"Duk3lo"},
+        description = "Simple proxy Plugin"
 )
 public final class Main {
-    @Inject
-    private ProxyServer server;
-
+    private static Main instance;
+    @Inject private final ProxyServer proxy = Numdrassl.getProxy();
+    @Inject private Logger logger;
+    @Inject @DataDirectory private Path path;
+    private RedisService redisService;
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        System.out.println("Astral Proxy Initialize");
-
+        instance = this;
+        Configuration config = new Configuration(path);
+        config.load();
+        redisService = new RedisService(config.redisHost(), config.redisPort(), config.redisTimeout(), logger);
+        proxy.getCommandManager().register(instance, new CommandReload(logger, config));
+        proxy.getEventManager().register(instance, new EventsRegistry(redisService, logger));
+        logger.info("Proxy Plugin initialized");
     }
+
+    public void setRedisService(RedisService redisService) {
+        this.redisService = redisService;
+    }
+
+    public static Main getInstance() {return instance;}
 }
