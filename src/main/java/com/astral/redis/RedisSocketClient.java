@@ -143,6 +143,12 @@ public final class RedisSocketClient implements Closeable {
         return resp.toString();
     }
 
+    public boolean hexists(String key, String field) throws IOException {
+        sendCommand("HEXISTS", key, field);
+        Object resp = readRESP();
+        return resp instanceof Long && ((Long) resp) == 1L;
+    }
+
     @Override
     public void close() throws IOException {
         socket.close();
