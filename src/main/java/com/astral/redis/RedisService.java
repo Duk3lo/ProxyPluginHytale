@@ -11,7 +11,6 @@ public final class RedisService {
     private final int timeout;
     private final String password;
     private final Logger logger;
-
     private RedisSocketClient client;
 
     public RedisService(String host, int port, int timeout, String password, Logger logger) {

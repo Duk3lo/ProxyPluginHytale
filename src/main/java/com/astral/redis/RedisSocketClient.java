@@ -6,8 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public final class RedisSocketClient implements Closeable {
 
@@ -147,6 +146,36 @@ public final class RedisSocketClient implements Closeable {
         sendCommand("HEXISTS", key, field);
         Object resp = readRESP();
         return resp instanceof Long && ((Long) resp) == 1L;
+    }
+
+    public @NotNull List<String> hkeys(String key) throws IOException {
+        sendCommand("HKEYS", key);
+        Object resp = readRESP();
+        if (resp == null) return Collections.emptyList();
+        if (!(resp instanceof List<?> raw)) throw new IOException("Respuesta inesperada para HKEYS: " + resp);
+
+        List<String> out = new ArrayList<>(raw.size());
+        for (Object o : raw) {
+            out.add(o == null ? null : o.toString());
+        }
+        return out;
+    }
+
+    public @NotNull Map<String, String> hgetAll(String key) throws IOException {
+        sendCommand("HGETALL", key);
+        Object resp = readRESP();
+        if (resp == null) return Collections.emptyMap();
+        if (!(resp instanceof List<?> raw)) throw new IOException("Respuesta inesperada para HGETALL: " + resp);
+
+        Map<String, String> map = new HashMap<>(raw.size() / 2 + 1);
+        for (int i = 0; i + 1 < raw.size(); i += 2) {
+            Object fk = raw.get(i);
+            Object fv = raw.get(i + 1);
+            String field = fk == null ? null : fk.toString();
+            String value = fv == null ? null : fv.toString();
+            if (field != null) map.put(field, value);
+        }
+        return map;
     }
 
     @Override
