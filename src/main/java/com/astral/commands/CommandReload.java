@@ -28,13 +28,13 @@ public final class CommandReload implements Command {
     @Contract(pure = true)
     @Override
     public @NotNull String getName() {
-        return "reload";
+        return "astProxy";
     }
 
     @Contract(pure = true)
     @Override
     public @NotNull String getPermission() {
-        return "numdrassl.command.reload_redis";
+        return "numdrassl.command.astProxy";
     }
 
     @Contract(pure = true)
@@ -46,17 +46,17 @@ public final class CommandReload implements Command {
     @Override
     public @NotNull CommandResult execute(@NotNull CommandSource commandSource, String @NotNull [] args) {
         if (args.length == 0) {
-            commandSource.sendMessage("Usage: /reload <type>");
+            commandSource.sendMessage("Usage: /astProxy <type>");
             return CommandResult.failure();
         }
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("redis")) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             Optional<Player> playerOpt = commandSource.asPlayer();
-            playerOpt.ifPresent(player -> player.sendMessage("Reloading redis"));
+            playerOpt.ifPresent(player -> player.sendMessage("Reloading Configuration..."));
             Configuration configuration = this.configuration;
             configuration.load();
             plugin.setRedisService(new RedisService(configuration.redisHost(), configuration.redisPort(), configuration.redisTimeout(), configuration.redisPassword(), logger));
-            commandSource.sendMessage("Reloading redis");
+            commandSource.sendMessage("Reloading Proxy Configuration...");
             return CommandResult.success();
         }
 
